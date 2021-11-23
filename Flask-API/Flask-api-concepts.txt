@@ -1,0 +1,18 @@
+Flask is a microframework in python 
+
+    basic concept of the API is it returns and accepts a Json file that is Dictionary data
+
+
+Basic steps:
+    from flask import Flask, jsonify
+
+    app = Flask(__name__)
+
+    @app.route("/", methods=['GET'])
+    def home():
+        return "Hello world"
+
+    if __name__ == "__main__":
+    app.run(debug=True)
+
+    

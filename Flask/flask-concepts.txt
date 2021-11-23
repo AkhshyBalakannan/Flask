@@ -1,0 +1,585 @@
+
+Flask is a framework similar as Django but the main difference will be we dont have ton of 
+things inside the box
+
+H-INSTALLATION:
+
+    To use Flask we need to install flask from pip 
+    Its recommanded to create venv and use the project
+
+            python -m venv venv // to install venv
+
+            pip install flask   // to install flask
+
+
+    Now we are good to go we have successfully installed flask and ready to run the project
+
+
+H-STARTUP-CODE
+
+    To start we can create an py file with any name and add 5 lines of code
+
+        from flask import Flask
+        app = Flask(__name__)
+
+        @app.route('/')
+        def hello():
+            return "Hello World!
+            
+
+    As you can see the above five lines are all it takes to run the flask project
+
+    You can see that we have used an decorator which will work and map it to the url link which we give here
+
+            TO KNOW DECORATORS GOTO PYTHON NOTES
+
+    Okay to run Flask we need to the terminal and give
+
+        export FLASK_APP = <module-name>.py // setting env variable at instance
+
+        flask run 
+
+    All good the sample application would have been hosted 
+
+    We also have some disadvantage here as your creating instance you need to type export line 
+    each time you close and open your terminal 
+
+    Also you web server will not automatically refresh each time you make changes while you do it this way
+
+        export FLASK_DEBUG=1
+
+    Now our application will auto refresh when ever we make any changes to the code
+
+
+TO SKIP ALL THESE TWO STEPS WE CAN ADD CODE IN THE <MODULE_NAME>.py 
+
+    // keep it in the last 
+    if __name__ == '__main__':
+        app.run(debug=True)
+
+Now can goto the terminal and give 
+
+    python <module-name>.py     // will start the web server 
+
+H-HINTS:
+
+    To assign same function to different url routes we can simply chain them as 
+
+            @app.route('/')
+            @app.route('/home')
+            def home():
+                return "Hello World!"
+
+
+H-RENDER_TEMPLATE
+
+    As we have already seen how to send data from the flask server we need to know how to send template 
+
+    To send template we need to import render_template from flask as 
+
+        from flask import Flask, render_template 
+        app = Flask(__name__)
+
+         @app.route('/')
+            @app.route('/home')
+            def home():
+                return render_template('home.html')
+
+
+H-DATA-OBJECT
+
+    Now we can send static templates to the web browser and make it work but still we need some 
+    pages to be dynamic and to send data from the database to the user in the templated rendered form 
+
+    we can send data to the template using the second arg in the render_template function 
+
+        return render_template('home.html', data={'msg':'hello world!'})
+
+    Remember we need to send dictionary type to the template html page to render them in it 
+
+    Inside the HTML template we will be using the {{}} {%%}  these two notations to render things 
+
+
+    {%  %} - // escaping tags mostly used for extends while for if else statements 
+    {{  }} - // non escaping tags used for rendering datas from the dict that is passed 
+
+
+
+H_BOILER_TEMPLATE 
+
+    Boiler plates are like an basic step which will be followed or used almost everywhere and 
+    we dont need to repeat these steps or code lines for the basic functionality 
+
+    Here we can create an layout boiler plat which can be used to extend in other html 
+
+    for example: 
+        <! DOCTYPE html>
+        <html>
+        <head>
+            ...
+        </head>
+        <body>
+
+        </body>
+        </html>
+
+    this above lines are same for all the html page and to have these lines in all the html 
+    file we can have a single and add them to all other html files here we do it using extends 
+
+    {% block <content> %}
+    {% endblock %}
+
+    We can insert codes inside this block by calling them in other template as
+
+    {% extends 'layout.html' %}
+
+    {% block content %}
+    <h1>Hello World!</h1>
+    {% endblock content %}
+
+
+H-URL_FOR-FUNCTION 
+
+    This url_for function is flask function which we will be using in the href  and src 
+
+    Its good to use url_for in flask which we take care to find the file where it is locatted in 
+
+        href="{{ url_for('static',filename='main.css') }}"
+
+    As the first name is the folder where the file is located and the name is the exact file with dot 
+
+
+H-FORMS-WTF 
+
+    This is to create form we have the tags in html and other validations are required which you 
+    may need and so you need to create those validations but luckly we dont need to create it all again 
+
+
+    We have module which is flask-wtf for wt forms 
+    
+    To install we can use the pip install statement itself 
+
+        pip install flask-wtf 
+
+
+    To create a form we need to create a separate py file so that it will be easy to find 
+
+        forms.py 
+            from flask_wtf import FlaskForm 
+            from wtforms import StringField, BooleanField, PasswordField, SubmitField 
+            from wtforms.validators import DataRequired, Length, Email, EqualTo
+
+            class ReqistrationForm(FlaskForm):
+                username = StringField('username', validators=[DataRequired(), Length(min=2, max=10)])
+                email = StringField('Email', validators=[DataRequired(), Email()])
+                password = PasswordField('Password', validators=[DataRequired()])
+                confirm_password = PasswordField('Confirm Password', 
+                                                validators=[DataRequired(), EqualTo('password')])
+                submit = SubmitField('sign Up')
+
+
+    To use this form in the route we need to import it there and initialize them as 
+
+    from forms.py import RegistrationForm 
+
+    @app.route('/register')
+    def register():
+        form = RegistrationForm()
+        return render_template('signup.html',form=form )
+
+    
+    signup.html:
+
+        {% extends "layout.html" %}
+        {% block content %}
+        <form method="POST" action="">
+            {{ form.hidden_tag() }} // this will create the CSRF token for the form 
+
+            {{ form.username.label(class="<class names for styling >") }}
+                // the above line is for the label field of the input
+
+            {% if form.usernmae.errors %}
+                {{ form.username(class="") }}
+                    {% for error in form.username.errors %}
+                        {{ error }}
+                    {% endfor %}
+                
+            {% else %}
+                {{ form.username.(class="<class names for styling >") }}
+                // the above line is for the input field of the input
+
+            {% endif %}
+            
+
+            {{ form.submit(class="<class names for styling >") }}
+
+        <form>
+
+            <small> Already have Acc ? <a href="{{ url_for('register') }}"> </small>
+                                                // the url_for will be function name not the link url
+
+        {% endblock content %}
+    
+    from flask import Flask, render_template, url_for, flash, redirect
+
+    @app.route('/signup', methods=['GET', 'POST'])
+    def register():
+        form = RegistrationForm()
+        if form.validate_on_submit():
+            // do something 
+            flash(f'Account created {form.username.data}','success') // search for h-flash 
+            return redirect(url_for('home'))
+        return render_template('signup.html',form=form )
+
+
+
+H-FORM-VALIDATION 
+    Usually when we create a form we will also need validation for the form that is like 
+    each inputs should have max length or the fields may be required sort of validations 
+
+    TO perform these validation check in front end is by using JS we can but still people 
+    might try some short cuts and bypass the front end validations.
+
+    Even our server may alo be used for API calls on that time we might need server side validations
+
+    TO do these validation in server side we have the wtforms validator which steps to  use it 
+
+        1. from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+
+        2. create function named 
+                validate_fieldname(self, fieldname):
+                    if True:
+                        raise ValidationError('Error Message')
+
+        3. in template add these lines 
+            {% if form.password.errors %}
+             {{ form.password(class="form-control form-control-lg is-invalid") }}
+                <div class="invalid-feedback">
+                    {% for error in form.password.errors %}
+                        <span>{{ error }}</span>
+                    {% endfor %}
+                </div>
+            {% else %}
+                {{ form.password(class="form-control form-control-lg") }}
+            {% endif %}
+
+
+H-SECRET_KEY 
+
+    This Secret key is something which we will be using for the protection of our data like CSRF,
+    to add cokkies, modify cokkies, etc 
+
+    To set a secret_key we need to config the application that in the app.py file set as 
+
+        app.comfig['SECRET_KEY'] = ''
+
+
+H-SECRET_KEY-MODULE 
+
+    To create an secret key we have module in python which we can use 
+
+            1.Goto terminal and type python enter into python interpetor 
+
+            import secrets 
+            secrets.token_hex(16)
+            >> output will be the random generated value hashed in hexa 16 digit 
+
+
+H-FLASH-MESSAGE
+
+    Flash message is like html alert which will only be displayed once with some style 
+
+    to use flash in Flask we need to import this flash from flask which will be a function 
+
+    this will be in the routes page where you need flash 
+
+    from flask import Flask, flash 
+
+    flash(f'Hello world {data}', '<message-type>')     // message-types : success warning danger  
+
+
+    Inside Template that is html files we need to have these lines to display in UI 
+
+    {% with message = get_flashed_message(with_categories=true) %}
+    {% if messages %}
+        {% for category, message in messages %}
+         <div class="alert alert-{{ category }}"
+            {{ message }}
+        {% endfor %}
+    {% endif %}
+    {% endwith %}
+    {% block content %}
+    {% endblock content %}
+
+
+H-ORM-SQALCHEMY
+H-DATABASE
+
+    Sqlalchemy is a module which will act as the bridge that connects between the flask and database 
+
+    TO use the sqlalchemy we need to install it 
+        pip install flask-sqlalchemy 
+
+    
+    after installing the module we need to import it the route file which will speak with the database 
+
+    from datetime import DateTime
+    from flask_sqlalchemy import SQLAlchemy 
+    ...
+
+    app = Flask(__name__)
+    app.config['SECRET_KEY'] = ''
+    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+
+    db = SQLAlchemy(app)
+
+    // Database column 
+    class User(db.Model):
+        id = db.Column(db.Integer, primary_key=True)
+        username = db.Column(db.String(20), unique=True, nullable=False)
+        email = db.Column(db.String(120), unique=True, nullable=False)
+        image = db.Column(db.String(20), unique=True, default='default.jpg')
+        password = db.Column(db.String(60), nullable=False)
+        posts = db.relationship('Post', backref='author', lazy=True)    // this calls post model Post
+
+        def __repr__(self):
+            return f'User('{self.username}','{self.email}') '
+
+
+    class Post(db.Model):
+        id = db.Column(db.Integer, primary_key=True, nullable=False)
+        title = db.Column(db.String, unique=True,  nullable=False)
+        created_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+        user_id = db.Column(db.Integer, db.ForeignKey('user_id'), nullable=False) // this calls column user.id
+
+        def __repr__(self):
+            return f'User('{self.title}','{self.user_id}') '
+
+
+    To run the SQLAlchemy  
+        We need to try inside the python shell 
+
+        After entering the terminal we need give python 
+
+            python 
+
+            from <file-name> import db
+            db.create_all() 
+            // the above command will create all tables which we have written classes 
+            from flaskblog.models import User, Post 
+            user_1 = User(username='Akhshy', email='c@demo.com', password='password')
+            // here we have not given the image file and id which flask will take care of as PK and default values
+            
+            db.session.add(user_1) // this will not make changes to the db but it will tell we will change data 
+
+            db.session.commit() // this will only commit or make changes to the data base like save method 
+
+            // to get all the data from a table we can give 
+            User.query.all() 
+
+            // to get the first data 
+            User.query.first() 
+
+            // filter by methods 
+            User.query.filter_by(username='Akhshy').all()
+            // will return us a list of data 
+
+            user = User.query.filter_by(username='Akhshy').first()
+            user.id // will return us the id of that user 
+
+            User.query.get(1) // this will match the id and return us the data 
+
+            
+            
+            Here we have backref in the User model matched to the Post model which we can query from the User model as 
+
+            user = User.query.filter_by(username='Akhshy').first()
+            user.posts 
+            >> []
+
+            // this is now empty list where there is no post asigned to this particular user 
+
+            TO CREATE AN POST WITH USER_ID FOREIGN_KEY WE NEED TO GIVE THE INSTANCE ID OTHERWISE IT WILL BE STATIC 
+
+            post_1 = Post(title='Title 1', user_id = user.id)
+
+            db.session.add(post_1)
+            db.session.commit()
+
+            user.posts
+            >> [Post('Title 1', '<date time>')]
+            // this is exact list and we can use the list method to loop in them 
+
+
+           H-HINT 
+            MAIN THING HERE IN POST MODEL YOU DONT HAVE AUTHOR COLUMN BUT STILL WHEN YOU CALL 
+            POST.AUTHOR YOU GET THE USER MODEL DATA THIS IS BECAUSE OF THE BACKREF WHICH IS IN USER MODEL 
+
+            post = Post.query.first()
+            post.user_id
+            >> 1
+            post.author // which is not a column in post model but still this works because of the backref in the user model 
+            User('Akhshy','c@demo.com')
+
+
+            TO DELETE DATABASE DATA 
+
+            db.drop_all() // deletes the data in database 
+
+            db.create_all() // creates the data or model in database 
+
+
+H-PACKAGE RESTRUCTURE 
+
+    Usually we need to have packages because we can split all the code into their own separate files which will make our search easier 
+
+    In python we can declare a package by using the __init__.py which tells python that the folder is a package 
+
+    Also what we should know while we type the code in packages is that, __init__.py is the file which will be run first while we import 
+    or execute the folder and so all the initialization must be given there and the flask app config and those data should also be inside 
+    this __init__.py file 
+
+
+    1. create an folder for flask project 
+    2. cd to the folder create __init__.py file  
+    3. cut paste all imports, app.config, db config lines into the __init__.py file 
+    4. create separate models.py routes.py files and move codes to them 
+    5. rename or create run.py which should only contain app.run statement in it 
+        from <project-name / file-name> import app 
+
+        if __name__ == '__main__':
+            app.run(debug=True)
+
+    6. when run.py file is run as its package it will call the init file and run it first, so you will get the app instance being created 
+        in the __init__.py file so we can import the app from the package name .
+    
+
+H-BCRYPT-HASH-PASSWORD 
+
+    bcrypt is technic used for hashing passwords that is converting them into some encrypted form of text
+    and to do it in flask we can use bcrypt.
+
+    Flask already has the bcrypt module in it we can simply import it and use it 
+
+    Usage:
+            from flask_bcrypt import Bcrypt 
+
+            bcrypt = Bcrypt() // create an instance of Bcrypt to use the methods in it 
+
+            bcrypt.generate_password_hash('password')
+            // the above line is working of bcrypt hashing password into encrypted text 
+            this will return us combination of int and char 
+
+            we can also specify the type of hashing using the decode method 
+            utf-8 is for getting string 
+
+            bcrypt.generate_password_hash('password').decode('utf-8')
+
+            Now to check the password that we saved in db and login form will be 
+
+            hashed_pw = bcrypt.generate_password_hash('password').decode('utf-8')
+            bcrypt.check_password_hash(hashed_pw, 'password')
+            >> True 
+            bcrypt.check_password_hash(hashed_pw, 'testing')
+            >> False 
+
+
+H-USER_LOGIN 
+
+    Login system is something that every website will have and so we also have extension in flask 
+    for this login system to use this extension we need install the module 
+
+        pip install flask-login 
+
+        from flask_login import LoginManager 
+
+        login_manager = LoginManager(app) // we create an intance of loginmanager 
+
+        Extension should know which user is logging in and so we need create decorator 
+
+        models.py 
+
+            from flaskblog import db, login_manager 
+            from flask_login import UserMixin   
+
+            @login_manager.user_loader 
+            def load_user(user_id):
+                return User.query.get(int(user_id))
+
+            // so extension will except the user model to have certain attributes to work 
+                // is_anonynomous is_active is_authenticated get_id 
+                // we can create all these methods ourselves but as this are so common we inherit it 
+
+            
+            class User(db.Model, UserMixin):
+                ...
+
+        routes.py 
+
+            // here all the function and validation will take place 
+            // things we need to note is that we have a function login_user which managers
+            logins of the website which can be import from flask_login 
+
+            We also have current_user variable from the flask_login to get user logged in 
+
+            from flask_login import login_user, current_user,
+            from flask import request
+
+            @app.route("/login", methods=['GET', 'POST'])
+            def login():
+                if current_user.is_authenticated:
+                    return redirect(url_for('home'))
+                form = LoginForm()
+                if form.validate_on_submit():
+                    user = User.query.filter_by(email=form.email.data).first()
+                    if user and bcrypt.check_password_hash(user.password, form.password.data):
+                        login_user(user, remember=form.remember.data)
+                        next_page = request.args.get('next')
+                        return redirect(next_page) if next_page else redirect(url_for('home'))
+                    else:
+                        flash('Login Unsuccessful. Please check email and password', 'danger')
+                return render_template('login.html', title='Login', form=form)
+                    
+
+            Once the user is logged in next will be logout which is also managed by flask 
+
+            
+            from flask_login import login_user, current_user, logout_user 
+
+            @app.route("/logout")
+            def logout():
+                logout_user()
+                return redirect(url_for('home'))
+
+
+
+        template nav.html 
+
+            Here we also have the variable current_user in the template automatically and so 
+            we can check it in the jinja template 
+
+            {% if current_user.is_authenticated %}
+            <a href="/logout">
+            {% else %}
+            <a href="/login">
+            <a href="/signup">
+            {% endif %}
+
+    So all the above topics were about logging in and logging out the user with credentials 
+
+    Normally you may need some routes that should only be viewed when an user is logged in such as 
+    account details page should be viewed only if the user is logged in to make these restrictions 
+    we have funciton decorator name login_required from the flask_login module 
+
+    __init__.py
+        login_manager = LoginManager(app) // create instance of login_manager
+        login_manager.login_view = 'login' // create a place when login_required decorator works 
+        login_manager.login_message_category = 'info' // Sending message that to login first 
+
+    routes.py 
+        @app.route("/account")
+        @login_required
+        def account():
+            return render_template('account.html', title='Account')
+
+
