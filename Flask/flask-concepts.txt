@@ -583,3 +583,177 @@ H-USER_LOGIN
             return render_template('account.html', title='Account')
 
 
+H-FLASK-MIGRATION 
+    This is an extension which will be used in flask to keep tract of the things that is changed or 
+    if you want change any changes to the db we need this migration let me make it more clear down 
+
+        Migration means moving something from one place to another 
+        Here Flask-Migration means the same as well, moving the changes of database code to the db 
+
+        We need this very badly because when you have an db with existing db code and if make changes 
+        to the database field in code and start your project and try to add data to the new field 
+        you database will have no idea what your talking about because you have not told db the things you 
+        want to add or change.
+
+        And for this reason we need an intermediate person or something which will keep record on what is in code
+        and what is the db at the particular time adn if we make changes to the code this intermediate person 
+        will tell the db to make these changes and tell it to be ready to accept data for the newly changed things.
+
+        Flask-Migration is an extension which can be installed using the pip install command 
+
+            pip install Flask-Migration 
+            // the above line will install the flask_migration 
+
+            next step is to import it in our code craete an instance of it with the code and db 
+
+            from flask_migration import Migrate 
+
+            migrate = Migrate(app, db)
+            // the Migrate class accepts two arg one the app instance and the db instance to make connection and be the intermediate person
+
+    TO  CHECK FLASK MIGRATION COMMANDS GIVE 
+            FLASK DB IN SMALL 
+
+            Now we need to create a new instance of this Flask-Migrate using the command in the terminal 
+
+                    flask db init 
+                    // which will create the migration dir with all the files inside 
+
+                    Main file is the version which will be empty for now but this is the place where it keeps track of 
+                    modification that we have made to db 
+
+                    Here we also have two thing that is upgrade and downgrade these are to commit and rollback changes to db 
+                    these are like revision functions 
+
+            To migrate an change made to database we need to give 
+
+                    flask db migrate -m "Initial Migration"
+                    // which start and create an migration file with the SQL that will be used by DB 
+
+
+                    flask db upgrade 
+                    // which will commit changes to the db and usually this word will be migrate in djang but here its upgrade
+
+                    flask db downgrade 
+                    // which will rollback changes to the db 
+
+            H-HINT  PLEASE REFER GOOGLE TO DROP COLUMN  AS I SAW IT NEED TO CREATE NEW TABLE AND COPY DATA TO IT 
+                    AND DELETE THE OLD TABLE AND RENAME THE NEW TABLE TO SAME OLD NAME 
+
+                    BUT NOTE I TRIED IT BUT IT DIDNT NEED ANY EXTRA STEP TO DO THE ABOVE FUNCTION 
+
+
+
+
+H-MANY-TO-MANY-RELATIONSHIP 
+
+    Association table is needed to create many to many relaationship which will be the third table 
+    Here in this example we will have an example using channel and user as two tables and we want many to many relationship 
+
+    1. create teh tables
+
+        class User(db.Model):
+            user_id = db.Column(db.Integer, primary_key=True)
+            name = db.Column(db.String(20))
+
+        class Channel(db.Model):
+            channel_id=db.Column(db.Integer, primary_key=True)
+            channel_name = db.Column(db.String(20))
+
+        // Now we have created the two main tables but the thing is we have no connection between these two table right now 
+        // To connect these two table we need a third table which will be the association table telling the connection between these 
+
+        Association table could be another Model like User and channel but since your not going to directly manipulate the table 
+        we are going to create table like db.table which will create a table but adding and removing will be taken care by the SQLAlchemy itself 
+
+            subs = db.Table('subs',
+                db.Column('user.id',db.Integer, db.ForeignKey('user.user_id')),
+                db.Column('channel_id', db.Integer, db.ForeignKey('channel.channel_id'))
+            )
+
+        // Now we have created the third table with the db.table attribute which is not like the regular model table we created for user and channel
+         Its pretty simple it has the two column with the ids in it and it has the foreignKey linked to them and this makes it an association table
+
+        BUT STILL WE DONT HAVE ANY FIELD THAT MATCH ALL THESE THREE TABLES TOGETHER,
+        THIS STEP IS IMPORTANT BECAUSE YOU HAVE NOT CREATED A MODEL OF ASSOCIATION TABLE ITS SIMPLE DB.TABLE AND SQLALCHEMY WITH WORK ON IT 
+        LET SQLALCHEMY KNOW WHEN AND WHAT TO ADD TO SUBS TABLE WE NEED A FIELD IN THE CHANNEL OR USER MODEL LINKING ALL THESE THREE TABLES 
+
+        // so we are going to add third field its like only attribute not an column 
+
+        class User(db.Model);
+            ...
+            ...
+            subscriptions=db.relationship('Channel', secondary='subs', backref=db.backref('subscribers', lazy='dynamic'))
+            // this is many to many and so we need the secondary attribute pointing to the association table 
+            // this backrefs are something which will add the column to the channel model and we can use it while querying
+            // lazy will be like how the data should be loaded when we backref in our query 
+            // lazy dynamic will be like it will not get all the data it will return us a query which is efficient and 
+            // we can loop over it and get what data we need 
+
+        TERMINAL COMMAND:
+
+            db.create_all() // to load the database with the tables 
+
+            user1=User(name='Akhshy')
+            user2=User(name='Ganesh')
+            user23=User(name='Sujatha')
+
+            db.session.add(user1)
+            db.session.add(user2)
+            db.session.add(user3)
+                    OR 
+            db.session.add_all([user1,user2,user3])
+
+            db.session.commit() 
+
+            channel1= Channel(channel_name='comedy')
+            channel2= Channel(channel_name='horror')
+            db.session.add(channel1)
+            db.session.add(channel2)
+            db.session.commit()
+
+            // now we are going create the many to many relation ship 
+            // we are going to use this in backref we created in the user and add data to the subs table 
+
+            channel1.subcribers.append(user1)
+            db.session.commit()
+            // Now we can see that sub table will be added with the user_id and channel_id 
+
+            channel1.subcribers.append(user2)
+            channel1.subcribers.append(user3)
+            channel2.subcribers.append(user3)
+            channel2.subcribers.append(user2)
+            channel2.subcribers.append(user1)
+            db.session.commit()
+
+            // Now to get the table subs value we can use the same backrefs and get the data 
+
+            channel1.subcribers 
+            // which will return as the query because we have set it to lazy dynamic 
+            // so we can loop over it to get the data 
+
+            for user in channel1.subcribers:
+                print(user.name)
+            
+            Akhshy
+            Ganesh
+            Sujatha 
+
+            // by this way we can have the relationship and query the data  
+
+            user2.subscriptions
+
+            comedy
+            horror 
+
+            // this are the subscriptions column value which we can get the value from user 
+
+    MAIN THING WE CANT QUERY THE SUBS TABLE HERE BECAUSE ITS NOT INSTANCE SO WE NEED THE 
+    BACKREF ATTRIBUTE NAME FOR THE CHANNEL, AND THE USER COLUMN SUBCRIPTIONS ATTRIBUTE TO GET THE REVERSE VALUES 
+
+    DONT TRY TO GET THE ASSOCIATION TABLE GET THE COLUMN VALUE OF THE THE PARTICULAR TABLE ITSELF 
+
+            
+
+
+

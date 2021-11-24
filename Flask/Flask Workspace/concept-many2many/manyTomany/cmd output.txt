@@ -1,0 +1,61 @@
+>>> from manyTomany.models import *
+E:\Workspace\Flask\Flask\Flask Workspace\manyTomany\venv\lib\site-packages\flask_sqlalchemy\__init__.py:872: FSADeprecationWarning: SQLALCHEMY_TRACK_MODIFICATIONS adds significant overhead and will be disabled by default in the future.  Set it to True or False to suppress this warning.
+  warnings.warn(FSADeprecationWarning(
+>>> from manyTomany import db
+>>> db.create_all()
+>>> user1=User(name='Akhshy')
+>>> db.session.all(user1)
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'scoped_session' object has no attribute 'all'
+>>> db.session.add(user1)
+>>> db.session.commit()
+>>> c1 = Channel(channel_name="CN")
+>>> c2= Channel(channel_name="POGO")
+>>> u2=User(name="ganesh")
+>>> u3=User(name="sujatha")
+>>> db.session.add_all([c1,c2,u2,u3])
+>>> db.session.commit()
+>>> user1
+<User 1>
+>>> c1.subscribers.append(u2)
+>>> c2.subscribers.append(u2)
+>>> c2.subscribers.append(user1)
+>>> c2.subscribers.append(u3)
+>>> subs.query.all()
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'Table' object has no attribute 'query'
+>>> User.query.all()
+[<User 1>, <User 2>, <User 3>]
+>>> db.session.commit()
+>>> c1.subscribers
+<sqlalchemy.orm.dynamic.AppenderBaseQuery object at 0x00000142DEC48F40>
+>>> u2.subcriptions
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'User' object has no attribute 'subcriptions'
+>>> u2.subscriptions
+[<Channel 2>, <Channel 1>]
+>>> c2.subcribers
+Traceback (most recent call last):
+  File "<stdin>", line 1, in <module>
+AttributeError: 'Channel' object has no attribute 'subcribers'
+>>> c2.subscribers
+<sqlalchemy.orm.dynamic.AppenderBaseQuery object at 0x00000142DEC48D90>
+>>> for u in u2.subscriptions
+  File "<stdin>", line 1
+    for u in u2.subscriptions
+                             ^
+SyntaxError: invalid syntax
+>>> for u in u2.subscriptions:
+...     print(u)
+...
+<Channel 2>
+<Channel 1>
+>>> for c in c2.subscribers:
+...     print(c)
+...
+<User 2>
+<User 1>
+<User 3>
