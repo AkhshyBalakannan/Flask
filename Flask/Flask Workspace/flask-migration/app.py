@@ -14,7 +14,7 @@ migrate = Migrate(app, db)
 
 
 # this code is to try the migrate functions 
-#command line codes are flask db init to create migration folder
+# command line codes are flask db init to create migration folder
 # flask db migrate is to create the migration file sql query 
 # we can add commit message by giving flask db migrate -m "message"
 # Lastly to make changes to the db we give flask db upgrade 

@@ -1,7 +1,7 @@
 from manyTomany import db
 
 subs = db.Table('subs',
-                db.Column('user.id', db.Integer,
+                db.Column('user_id', db.Integer,
                           db.ForeignKey('user.user_id')),
                 db.Column('channel_id', db.Integer,
                           db.ForeignKey('channel.channel_id'))
