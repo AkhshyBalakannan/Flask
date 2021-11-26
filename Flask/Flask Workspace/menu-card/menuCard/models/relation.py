@@ -1,5 +1,5 @@
-from miniProjectBackend import db
-from miniProjectBackend import models
+from menuCard import db
+from menuCard import models
 
 
 relation = db.Table('relation',
@@ -8,3 +8,5 @@ relation = db.Table('relation',
                     db.Column('food_id', db.Integer,
                               db.ForeignKey('food.food_id'))
                     )
+
+

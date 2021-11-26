@@ -1,12 +1,7 @@
-from miniProjectBackend import app,models
+from miniProjectBackend.models.meal import create_meal, update_meal, delete_meal
+from flask import redirect, url_for, request, render_template, Blueprint
 
-from flask import redirect, url_for, request, render_template
-
-
-Meal = models.meal.Meal
-add_Meal = models.meal.create_meal
-update_Meal = models.meal.update_meal
-delete_Meal = models.meal.delete_meal
+meal_routes=Blueprint("meal_routes", __name__)
 
 data = {
     'food':'',
@@ -14,21 +9,21 @@ data = {
     'relation':'',
 }
 
-@app.route('/meal', methods=['GET','POST','PATCH'])
+@meal_routes.route('/', methods=['GET','POST','PATCH'])
 def meal():
     if request.method == 'GET':
         return data
     if request.method == 'POST':
-        meal_instance = add_Meal(request.form.get('meal'))
+        meal_instance = create_meal(request.form.get('meal'))
         return(f'created meal{meal_instance}')
 
     if request.method == 'PATCH':
-        meal_instance = update_Meal(request.form.get('old_name'), request.form.get('new_name'))
+        meal_instance = update_meal(request.form.get('old_name'), request.form.get('new_name'))
        
         return(f'created Meal {meal_instance}')
 
-@app.route('/delete/meal/<int:id>', methods=['DELETE'])
+@meal_routes.route('/delete/<int:id>', methods=['DELETE'])
 def meal_deletion(id):
     if request.method == 'DELETE':
-        delete_Meal(id)
+        delete_meal(id)
         return (f'deleted Meal and relation')

@@ -1,8 +1,8 @@
-from miniProjectBackend import models
-from miniProjectBackend import db
+from menuCard import models
+from menuCard import db
 
 
-# Meal class for db
+
 class Meal(db.Model):
     meal_id = db.Column(db.Integer, primary_key=True)
     meal_name = db.Column(db.String(20))
@@ -15,21 +15,18 @@ def create_meal(meal_name):
     meal_instance = Meal(meal_name=meal_name)
     db.session.add(meal_instance)
     db.session.commit()
+
     return meal_instance
 
-
-# Update meal
 def update_meal(old_meal_name, new_meal_name):
-    meal_instance = Meal.query.filter_by(
-        meal_name=old_meal_name).first()
+    meal_instance = models.Meal.query.filter_by(meal_name=old_meal_name).first()
     meal_instance.meal_name = new_meal_name
     db.session.add(meal_instance)
     db.session.commit()
+
     return meal_instance
 
-
-# Delete meal
 def delete_meal(id):
-    meal_instance = Meal.query.filter_by(meal_id=id).first()
+    meal_instance = models.Meal.query.filter_by(meal_id=id).first()
     db.session.delete(meal_instance)
     db.session.commit()

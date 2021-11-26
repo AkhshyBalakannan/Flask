@@ -1,4 +1,5 @@
-from miniProjectBackend import app , db, models
+from menuCard import app , db
+from menuCard import models
 
 from flask import redirect, url_for, request, render_template
 
