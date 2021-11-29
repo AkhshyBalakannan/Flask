@@ -9,7 +9,7 @@ data = {
     'relation':'',
 }
 
-@meal_routes.route('/', methods=['GET','POST','PATCH'])
+@meal_routes.route('/cru', methods=['GET','POST','PATCH'])
 def meal():
     if request.method == 'GET':
         return data

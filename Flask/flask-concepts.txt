@@ -484,7 +484,7 @@ H-BCRYPT-HASH-PASSWORD
             >> False 
 
 
-H-USER_LOGIN 
+H-USER-LOGIN 
 
     Login system is something that every website will have and so we also have extension in flask 
     for this login system to use this extension we need install the module 
@@ -552,6 +552,18 @@ H-USER_LOGIN
                 return redirect(url_for('home'))
 
 
+        forms.py 
+            from flask_wtf import FlaskForm
+            from wtforms import StringField, PasswordField, SubmitField, BooleanField
+            from wtforms.validators import DataRequired, Length, Email, EqualTo, ValidationError
+
+            class LoginForm(FlaskForm):
+                email = StringField('Email',
+                                    validators=[DataRequired(), Email()])
+                password = PasswordField('Password', validators=[DataRequired()])
+                remember = BooleanField('Remember Me')
+                submit = SubmitField('Login')
+
 
         template nav.html 
 
@@ -612,7 +624,7 @@ H-FLASK-MIGRATION
             // the Migrate class accepts two arg one the app instance and the db instance to make connection and be the intermediate person
 
     TO  CHECK FLASK MIGRATION COMMANDS GIVE 
-            FLASK DB IN SMALL 
+            FLASK DB "IN SMALL"
 
             Now we need to create a new instance of this Flask-Migrate using the command in the terminal 
 
@@ -642,7 +654,21 @@ H-FLASK-MIGRATION
 
                     BUT NOTE I TRIED IT BUT IT DIDNT NEED ANY EXTRA STEP TO DO THE ABOVE FUNCTION 
 
+    TO USE MIGRATION WHILE FLASK IS USED AS PACKAGE 
 
+        Inside the __init__.py we need add the following code so that flask migrate will be initiated 
+            
+                    from flask_migration import Migrate 
+                    migrate = Migrate(app, db)
+
+        We need a app.py file which will check and create the migrations for us inside the package file 
+        commands are the same 
+
+                    flask db init 
+                    
+                    flask db migrate -m ""
+                    
+                    flask db upgrade 
 
 
 H-MANY-TO-MANY-RELATIONSHIP 
@@ -650,7 +676,7 @@ H-MANY-TO-MANY-RELATIONSHIP
     Association table is needed to create many to many relaationship which will be the third table 
     Here in this example we will have an example using channel and user as two tables and we want many to many relationship 
 
-    1. create teh tables
+    1. create tables
 
         class User(db.Model):
             user_id = db.Column(db.Integer, primary_key=True)
@@ -684,11 +710,68 @@ H-MANY-TO-MANY-RELATIONSHIP
             ...
             ...
             subscriptions=db.relationship('Channel', secondary='subs', backref=db.backref('subscribers', lazy='dynamic'))
+            
+            
             // this is many to many and so we need the secondary attribute pointing to the association table 
             // this backrefs are something which will add the column to the channel model and we can use it while querying
             // lazy will be like how the data should be loaded when we backref in our query 
             // lazy dynamic will be like it will not get all the data it will return us a query which is efficient and 
             // we can loop over it and get what data we need 
+
+
+        Concepts of backref and back_populate in SQLalchemy
+
+            backref is a shortcut for configuring both parent.children and child.parent relationships at one place 
+            only on the parent or the child class (not both). That is, instead of having
+
+            children = relationship("Child", back_populates="parent")  # on the parent class
+            
+                                    and
+
+            parent = relationship("Parent", back_populates="children")  # on the child class
+            
+                            you only need one of this:
+
+            children = relationship("Child", backref="parent")  # only on the parent class
+            
+                                    or
+
+            parent = relationship("Parent", backref="children")  # only on the child class
+            children = relationship("Child", backref="parent") 
+            
+            will create the .parent relationship on the child class automatically. 
+            On the other hand, if you use back_populates you must explicitly create the relationships in both parent and child classes.
+
+            Why does the relationship() go inside the parent class while ForeignKey goes inside the child class?
+
+            As I said above, if you use back_populates, it needs to go on both parent and child classes. 
+            If you use backref, it needs to go on one of them only. 
+            ForeignKey needs to go on the child class, no matter where the relationship is placed, 
+            this is a fundamental concept of relational databases.
+
+            And what does having back_populates exactly do to one another?
+
+            back_populates informs each relationship about the other, so that they are kept in sync. 
+            For example if you do
+
+                p1 = Parent()
+                c1 = Child()
+                p1.children.append(c1)
+                print(p1.children)  # will print a list of Child instances with one element: c1
+                print(c1.parent)  # will print Parent instance: p1
+
+            As you can see, p1 was set as parent of c1 even when you didn't set it explicitly.
+
+            Does having the placement of which class the relationship() function exist in matter?
+
+            This only applies to backref, and no, you can place the relationship on the parent class 
+                (children = relationship("Child", backref="parent")) 
+               
+                // or on the child class 
+
+                (parent = relationship("Parent", backref="children")) 
+                // and have the exact same effect.
+
 
         TERMINAL COMMAND:
 
@@ -748,12 +831,112 @@ H-MANY-TO-MANY-RELATIONSHIP
 
             // this are the subscriptions column value which we can get the value from user 
 
+            User.query.limit(1).all()
+            
+            Akhshy 
+
+            // which will limit the user data returned 
+
+
     MAIN THING WE CANT QUERY THE SUBS TABLE HERE BECAUSE ITS NOT INSTANCE SO WE NEED THE 
     BACKREF ATTRIBUTE NAME FOR THE CHANNEL, AND THE USER COLUMN SUBCRIPTIONS ATTRIBUTE TO GET THE REVERSE VALUES 
 
     DONT TRY TO GET THE ASSOCIATION TABLE GET THE COLUMN VALUE OF THE THE PARTICULAR TABLE ITSELF 
 
+
+    H-HINT-QUERY-SQLALCHEMY
+
+        Retrieve a user by username:
+
+            >>> peter = User.query.filter_by(username='peter').first()
+            >>> peter.id
+            2
+            >>> peter.email
+            u'peter@example.org'
+
+        Same as above but for a non existing username gives None:
+           
+            >>> missing = User.query.filter_by(username='missing').first()
+            >>> missing is None
+            True
+
+        Selecting a bunch of users by a more complex expression:
+
+            >>> User.query.filter(User.email.endswith('@example.com')).all()
+            [<User u'admin'>, <User u'guest'>]
+
+        Ordering users by something:
+
+            >>> User.query.order_by(User.username).all()
+            [<User u'admin'>, <User u'guest'>, <User u'peter'>]
+
+        Limiting users:
+
+            >>> User.query.limit(1).all()
+            [<User u'admin'>]
+
+        Getting user by primary key:
+
+            >>> User.query.get(1)
+            <User u'admin'>
+
+
+    H-HINT-404-FUNCTION 
+
+        If you write a Flask view function it’s often very handy to return a 404 error for missing entries. 
+        Because this is a very common idiom, Flask-SQLAlchemy provides a helper for this exact purpose. 
+        Instead of get() one can use get_or_404() and instead of first() first_or_404(). 
+        This will raise 404 errors instead of returning None:
+
+                @app.route('/user/<username>')
+                def show_user(username):
+                    user = User.query.filter_by(username=username).first_or_404()
+                    return render_template('show_user.html', user=user)
+        
+        Also, if you want to add a description with abort(), you can use it as argument as well.
+
+            >>> User.query.filter_by(username=username).first_or_404(description='There is no data with {}'.format(username))
             
 
+            
+H-SPLIT-CODE-MODELS :
+
+    The basic idea here is to have separate folders and files for model, routes and views 
+
+    MOST COMMON ERROR FACED WILL BE circular import 
+
+        To come over this error we need to have import everything globally in the init file 
+        and call it inside the files using the module.function_name 
+
+
+H-SPLIT-ROUTES 
+
+    Splitting routes is not simple as we import the files alone in the init file because 
+    we need make sure flask knows routes are splitted and it needs to check the url even in that files 
+
+    Importing route files will get the view function imported but it wont check those url each time request 
+    is made to the server because we are not executing the function directly by calling them so import 
+    helps only in explicit determination of function 
+
+
+    WE NEED AN HELPER THAT WILL TELL FLASK ABOUT THE SPLITTINGS 
+
+        from flask import Blueprint
+        <route-name>=Blueprint("<route-name>", __name__)
+
+        @<route-name>.route('/',methods=[])
+        def doSomething():
+            return something;
+
+        // the above line should be the base of the separate route file we write 
+        // blueprint will register that this is route which flask has to check each and every time request is made 
+
+        NOW WE NEED TO IMPORT THIS ROUTES IN OUR INIT FILE TO REGISTER THEM 
+
+            from .routes.<file-name> import <route-name>
+
+            app.register_blueprint(<route-name>, url_prefix="/food")
+
+        // this above lines will register the blue print to the flask 
 
 

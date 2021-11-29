@@ -1,4 +1,3 @@
-from menuCard import app
 from menuCard import models
 from flask import Blueprint, request
 

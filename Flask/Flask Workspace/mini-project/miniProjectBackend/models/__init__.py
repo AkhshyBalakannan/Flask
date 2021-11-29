@@ -1,3 +1,3 @@
-from menuCard.models.food import Food
-from menuCard.models.relation import relation
-from menuCard.models.meal import Meal
+from miniProjectBackend.models.food import Food
+from miniProjectBackend.models.relation import relation
+from miniProjectBackend.models.meal import Meal
