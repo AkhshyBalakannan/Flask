@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_migrate import Migrate 
 from flask_sqlalchemy import SQLAlchemy
-from flask_login import LoginManager 
 from flask_bcrypt import Bcrypt 
 
 
@@ -21,8 +20,6 @@ migrate = Migrate(app, db)
 
 bcrypt = Bcrypt()
 
-login_manager = LoginManager(app)
-
 from miniProjectBackend import route
 
 from .routes.food import food_routes
@@ -31,4 +28,6 @@ from .routes.auth import auth_routes
 
 app.register_blueprint(food_routes, url_prefix="/food")
 app.register_blueprint(meal_routes, url_prefix="/meal")
-app.register_blueprint(auth_routes, url_prefix="/auth")
+app.register_blueprint(auth_routes, url_prefix="/user")
+
+

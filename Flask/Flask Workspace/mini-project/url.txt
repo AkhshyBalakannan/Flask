@@ -1,0 +1,21 @@
+http://localhost:5000/db-create -   GET
+http://localhost:5000/db-drop   -   GET
+http://localhost:5000/link  -   POST
+
+http://localhost:5000/user/login
+
+http://localhost:5000/user/all  -   GET
+http://localhost:5000/user/new  -   POST
+http://localhost:5000/user/update   -   PATCH
+http://localhost:5000/user/promote/<public_id>  -   PUT
+http://localhost:5000/user/delete/<public_id>   -   DELETE
+
+http://localhost:5000/food/all  -   GET
+http://localhost:5000/food/create   -   POST
+http://localhost:5000/food/update   -   PATCH
+http://localhost:5000/food/delete/<public_id>   -   DELETE
+
+http://localhost:5000/meal/all  -   GET
+http://localhost:5000/meal/create   -   POST
+http://localhost:5000/meal/update   -   PATCH
+http://localhost:5000/meal/delete/<public_id>   -   DELETE

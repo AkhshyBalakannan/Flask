@@ -16,4 +16,5 @@ MarkupSafe==2.0.1
 pycparser==2.21
 six==1.16.0
 SQLAlchemy==1.4.27
+uuid==1.30
 Werkzeug==2.0.2
