@@ -1,5 +1,7 @@
+'''Relation Model'''
 from miniProjectBackend import db
-from miniProjectBackend import models
+
+# pylint: disable=no-member
 
 
 relation = db.Table('relation',

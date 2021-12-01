@@ -1,38 +1,42 @@
-from miniProjectBackend import models
-from miniProjectBackend import db
+'''MEAL MODEL'''
 import uuid
+from miniProjectBackend import db
+
+# pylint: disable=no-member
 
 
-
-# Meal class for db
 class Meal(db.Model):
+    '''Meal Schema'''
     meal_id = db.Column(db.Integer, primary_key=True)
     public_id = db.Column(db.String(50), default=str(uuid.uuid4()))
     meal_name = db.Column(db.String(20))
     meal_food = db.relationship(
         'Food', secondary='relation', backref=db.backref('food_meals', lazy='dynamic'))
 
+    def __repr__(self):
+        '''repr'''
+        return f"Meal('{self.meal_name}')"
 
-# add meal
 def create_meal(data):
+    '''Add Meal Instance'''
     meal_instance = Meal(meal_name=data['meal_name'])
     db.session.add(meal_instance)
     db.session.commit()
     return meal_instance
 
 
-# Update meal
-def update_meal(old_meal_name, new_meal_name):
+def update_meal(data):
+    '''Update meal Instance'''
     meal_instance = Meal.query.filter_by(
-        meal_name=old_meal_name).first()
-    meal_instance.meal_name = new_meal_name
+        meal_name=data['old_meal_name']).first()
+    meal_instance.meal_name = data['new_meal_name']
     db.session.add(meal_instance)
     db.session.commit()
     return meal_instance
 
 
-# Delete meal
-def delete_meal(id):
-    meal_instance = Meal.query.filter_by(meal_id=id).first()
+def delete_meal(meal_id):
+    '''Delete meal Instance'''
+    meal_instance = Meal.query.filter_by(meal_id=meal_id).first()
     db.session.delete(meal_instance)
     db.session.commit()
