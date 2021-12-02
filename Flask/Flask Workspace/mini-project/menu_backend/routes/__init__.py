@@ -2,4 +2,4 @@
 
 # pylint: disable=cyclic-import
 
-from miniProjectBackend.routes import auth, food, meal
+from menu_backend.routes import auth, food, meal

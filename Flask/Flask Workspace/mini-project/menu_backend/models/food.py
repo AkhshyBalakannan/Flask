@@ -1,6 +1,6 @@
 '''FOOD MODEL'''
 import uuid
-from miniProjectBackend import db, models
+from menu_backend import db, models
 
 # pylint: disable=no-member
 
@@ -8,7 +8,7 @@ from miniProjectBackend import db, models
 class Food(db.Model):
     '''Food Schema'''
     food_id = db.Column(db.Integer, primary_key=True)
-    public_id = db.Column(db.String(50), default=str(uuid.uuid4()))
+    public_id = db.Column(db.String(50))
     food_name = db.Column(db.String(20))
 
     def __repr__(self):
@@ -17,7 +17,7 @@ class Food(db.Model):
 
 def create_food(data):
     '''Create food instance'''
-    food_instance = Food(food_name=data['food_name'])
+    food_instance = Food(food_name=data['food_name'], public_id=str(uuid.uuid4()))
     db.session.add(food_instance)
     db.session.commit()
     return food_instance
@@ -33,9 +33,9 @@ def update_food(data):
     return food_instance
 
 
-def delete_food(food_id):
+def delete_food(public_id):
     '''Delete food instance'''
-    food_instance = Food.query.filter_by(food_id=food_id).first()
+    food_instance = Food.query.filter_by(public_id=public_id).first()
     db.session.delete(food_instance)
     db.session.commit()
 

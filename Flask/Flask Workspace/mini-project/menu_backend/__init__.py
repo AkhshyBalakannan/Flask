@@ -9,7 +9,8 @@ app.config['SECRET_KEY'] = '1d053a80c2a8d6760b921bd7ed78f1e1'
 # to get this key we use secret module in python
 # import secrets
 # secrets.token_hex(16)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite.db'
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///sqlite.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
 # password = 'password@123'
 # app.config['SQLALCHEMY_DATABASE_URI'] = f'mysql://root:{password}@localhost:3306/miniproject'
 
@@ -21,7 +22,7 @@ bcrypt = Bcrypt()
 
 # pylint: disable=wrong-import-position
 
-from miniProjectBackend import route
+from menu_backend import route
 from .routes.food import food_routes
 from .routes.meal import meal_routes
 from .routes.auth import auth_routes

@@ -3,8 +3,8 @@ from functools import wraps
 from flask import request, jsonify
 import jwt
 
-from miniProjectBackend.models.user import User
-from miniProjectBackend import app
+from menu_backend.models.user import User
+from menu_backend import app
 
 
 def token_required(func):

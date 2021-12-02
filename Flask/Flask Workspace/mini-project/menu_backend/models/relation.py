@@ -1,5 +1,5 @@
 '''Relation Model'''
-from miniProjectBackend import db
+from menu_backend import db
 
 # pylint: disable=no-member
 

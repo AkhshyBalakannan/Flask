@@ -1,8 +1,8 @@
 '''Auth Route'''
 from flask import request, Blueprint, jsonify
-from miniProjectBackend.models.user import User, create_user, update_user, delete_user
-from miniProjectBackend.decorators import token_required, admin_only
-from miniProjectBackend.service import promote_user, generate_token
+from menu_backend.models.user import User, create_user, update_user, delete_user
+from menu_backend.decorators import token_required, admin_only
+from menu_backend.service import promote_user, generate_token
 
 auth_routes = Blueprint("auth_routes", __name__)
 
@@ -29,13 +29,11 @@ def all_user(current_user):
 
 
 @auth_routes.route('/new', methods=['POST'])
-@token_required
-@admin_only
-def register_user(current_user):
+def register_user():
     '''Post Register User'''
     data = request.get_json()
-    create_user(data)
-    return jsonify({'message': 'New user created!'})
+    public_id = create_user(data)
+    return jsonify({'message': f'New user created! id - {public_id}'})
 
 
 @auth_routes.route('/login')

@@ -1,6 +1,6 @@
 '''USER MODEL'''
 import uuid
-from miniProjectBackend import db, bcrypt
+from menu_backend import db, bcrypt
 
 # pylint: disable=no-member
 
@@ -27,7 +27,7 @@ def create_user(data):
     )), username=data['username'], email=data['email'], password=hashed_password)
     db.session.add(user)
     db.session.commit()
-
+    return user.public_id
 
 def update_user(data, user_instance):
     '''Update User Instance'''

@@ -1,7 +1,7 @@
 '''Food Route'''
 from flask import Blueprint, request, jsonify
-from miniProjectBackend.models.food import Food, create_food, update_food, delete_food
-from miniProjectBackend.decorators import token_required, admin_only
+from menu_backend.models.food import Food, create_food, update_food, delete_food
+from menu_backend.decorators import token_required, admin_only
 
 
 food_routes = Blueprint("food_routes", __name__)
@@ -18,7 +18,7 @@ def food(current_user):
 
     for data in datas:
         food_data = {}
-        food_data['name'] = data.food_name
+        food_data['food_name'] = data.food_name
         food_data['public_id'] = data.public_id
         output.append(food_data)
 
@@ -29,20 +29,26 @@ def food(current_user):
 @token_required
 @admin_only
 def food_create(current_user):
-    '''Post Create Food'''
+    '''Post Create Food
+    Data must be given with 
+    food_name
+    '''
     data = request.get_json()
     food_instance = create_food(data)
-    return f'created food {food_instance}'
+    return f'Created Food {food_instance}'
 
 
 @food_routes.route('/update', methods=['PATCH'])
 @token_required
 @admin_only
 def food_update(current_user):
-    '''Patch Update Food'''
+    '''Patch Update Food
+    Data must be given with 
+    old_food_name, new_food_name
+    '''
     data = request.get_json()
     food_instance = update_food(data)
-    return f'created food {food_instance}'
+    return f'Updated Food {food_instance}'
 
 
 @food_routes.route('/delete/<public_id>', methods=['DELETE'])
