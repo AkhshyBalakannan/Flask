@@ -28,7 +28,7 @@ def drop_all(current_user):
 @admin_only
 def relation(current_user):
     '''Create Relation
-    Data must be given with 
+    Data must be given with
     food_public_id, meal_public_id
     '''
     data = request.get_json()

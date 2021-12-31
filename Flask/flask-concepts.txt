@@ -940,3 +940,54 @@ H-SPLIT-ROUTES
         // this above lines will register the blue print to the flask 
 
 
+H-UNITTEST-FLASK 
+    Here we are going to use unittest for testing our application. 
+
+    create a separate file, 
+    
+    Step 1:
+        First Step here is to import unittest
+
+            import unittest 
+        
+    Step 2:
+        Create Class based test and inherit unittest.TestCase 
+
+            class FlaskTest(unittest.TestCase):
+                pass
+            
+    Step 3:
+        Create Functions inside the class with self args which will be passed automatically,
+           
+            def test_home(self):
+                client = app.test_client(self)
+                response = client.get("/")
+                self.assertEqual(response.status_code, 200) 
+
+        As you can see the above is the most basic level of testing class we can write to test base route,
+        
+        Here the first step is write the function name starting with test_ to make it visible for the unittest to do testing
+    
+
+                IF FUNCTION NAME IS NOT GIVEN WITH TEST_ IN THE STARTING THAN UNITTEST WILL SKIP THE FUNCTION 
+
+
+        Here we have used app which should be imported from the flask main file where app=Flask(__name__) is given 
+
+        We have test_client in the app object that we import form the flask and so we give self as an arg which 
+        can be used as client for accessing the route or acts as User interacting with the server 
+
+        Now we have created object which will reach server successfully but to check the testing we need something 
+        that will be check whether the test is successfully completed or whether faced any errors 
+
+        And so we use assertEqual or assertIf or assertIs or assertTrue or assertFalse or etc, 
+        This assert should be used with self 
+
+    Step 4:
+        Add the below line at the last to run the unit test on the particular file 
+
+            if __name__ == "__main__":
+                unittest.main()
+
+        
+FOR MORE EXAMPLE REFER MENUCARD PROJECT TESTING FILE 
